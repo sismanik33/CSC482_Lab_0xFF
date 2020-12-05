@@ -12,20 +12,25 @@ public class TSP {
 //        euclidGraph.printVertices();
 //        euclidGraph.printCostMatrix();
 //        double[][] euclidCM = euclidGraph.costMatrix;
-
-        int n = 10;
-        int max = 20;
-        int[][] costMatrix = new int[n][n];
-        generateRandomCostMatrix(costMatrix, n, max);
-        mctBruteForce(costMatrix);
-
-        printAdjacencyMatrix(costMatrix);
+        int n = 4;
+        CircularGraph cg = new CircularGraph(n, 3);
+        cg.printVertices();
+        cg.printCostMatrix();
+        double[][] costMatrix = cg.costMatrix;
         greedyBestTour(costMatrix, 0);
-
-        System.out.println("Best tour: " + bestTourLength);
-        for (int j : bestTour)
-            System.out.print(j + " ");
-        System.out.println();
+//        int n = 10;
+//        int max = 20;
+//        int[][] costMatrix = new int[n][n];
+//        generateRandomCostMatrix(costMatrix, n, max);
+//        mctBruteForce(costMatrix);
+//
+//        printAdjacencyMatrix(costMatrix);
+//        greedyBestTour(costMatrix, 0);
+//
+//        System.out.println("Best tour: " + bestTourLength);
+//        for (int j : bestTour)
+//            System.out.print(j + " ");
+//        System.out.println();
     }
     static void generateRandomCostMatrix(int[][] g, int n, int max){
         Random rand = new Random();
@@ -127,11 +132,11 @@ public class TSP {
 
 
 
-    public static void greedyBestTour(int[][] g, int startV)
+    public static void greedyBestTour(double[][] g, int startV)
     {
         int endV = 0;
         int numV = g[0].length;
-        int pathCost = 0;
+        double pathCost = 0;
         int[] visited = new int[numV + 1];
         Arrays.fill(visited, -1);
         visited[0] = startV;
@@ -140,9 +145,9 @@ public class TSP {
 
         while(nodesVisited < numV)
         {
-            int[] costsFromCurrVertex = g[currVertex]; //edge costs to all vertices from current vertex
+            double[] costsFromCurrVertex = g[currVertex]; //edge costs to all vertices from current vertex
             int bestNextStep = -1;
-            int minCost = Integer.MAX_VALUE; //should initiate to inf, MAX_VAL is closest.
+            double minCost = Integer.MAX_VALUE; //should initiate to inf, MAX_VAL is closest.
             for (int i = 0; i < numV; i++) {
                 //determine best next vertex that hasn't been visited
                 if (costsFromCurrVertex[i] < minCost && !arrayContains(visited, i) && i != currVertex)
