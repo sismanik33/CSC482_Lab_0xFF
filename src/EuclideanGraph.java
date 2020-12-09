@@ -5,7 +5,7 @@ import java.util.Random;
 public class EuclideanGraph {
     private int V;
     private Point[] points;   // points in the plane
-    private int maxCoord = 30;
+    private int maxCoord = 100;
     public double costMatrix[][] = new double[V][V];
 
     public EuclideanGraph(int numVertices) {

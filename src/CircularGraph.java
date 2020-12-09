@@ -6,6 +6,7 @@ import java.util.Random;
 
 public class CircularGraph {
     private int V;
+    public double[][] optimalPath;   // points around the circle before shuffling
     private double[][] points;   // points around the circle
     private int radius;
     public double costMatrix[][] = new double[V][V];
@@ -16,28 +17,24 @@ public class CircularGraph {
         // read in and insert vertices
         points = new double[V][2];
         costMatrix = new double[V][V];
-        double angleDegrees = 360 / V;
-        double angleRadians = Math.toRadians(angleDegrees);
+        generatePointsOnCircle();
+        optimalPath = Arrays.copyOf(points, points.length); //keep a copy of unshuffled circle.
+        shuffle(points);
 
+        generateCostMatrix();
+//        printCostMatrix();
+    }
+
+    private void generatePointsOnCircle()
+    {
+        double angleDegrees = 360.0 / (double)V;
+        double angleRadians = Math.toRadians(angleDegrees);
         for (int i = 0; i < V; i++) {
             double x = radius * Math.cos(angleRadians * i);
             double y = radius * Math.sin(angleRadians * i);
-            x = round(x, 2);
-            y = round(y, 2);
             points[i][0] = x;
             points[i][1] = y;
         }
-        shuffle(points);
-        generateCostMatrix();
-    }
-
-    private static double round(double value, int places) {
-    //code taken from https://www.baeldung.com/java-round-decimal-number
-        if (places < 0) throw new IllegalArgumentException();
-
-        BigDecimal bd = new BigDecimal(Double.toString(value));
-        bd = bd.setScale(places, RoundingMode.HALF_UP);
-        return bd.doubleValue();
     }
 
     private static void shuffle(double[][] points)
@@ -70,12 +67,49 @@ public class CircularGraph {
     public void printVertices(){
         for (int i = 0; i < V; i++)
         {
-            System.out.println("V " + i + ": " + points[i][0] + ", " + points[i][1]);
+            System.out.format("V%d: (%4.2f, %4.2f)\n", i, points[i][0], points[i][1]);
         }
     }
 
+    public void printOptimalPath()
+    {
+        int startVertex = 0;
+        System.out.println("Shortest path on un-shuffled nodes: ");
+        for (int i = 0; i < optimalPath.length; i++) {
+            double currX = optimalPath[i][0];
+            double currY = optimalPath[i][1];
+            System.out.format("V%d(%4.2f, %4.2f) to ", i, currX, currY);
+            if(i > 0 && i % 8 == 0)
+                System.out.println();
+        }
+        //from final node back to node 0:
+        System.out.format("V%d(%4.2f, %4.2f)\n", startVertex, optimalPath[startVertex][0], optimalPath[startVertex][1]);
+        double shortestEdge = calculateOptimalEdge();
+        System.out.println("|  Min-Edge: " + shortestEdge + "  |  Expected distance: " + shortestEdge * optimalPath.length + "  |");
+    }
+
+    public void printPath(int[] path)
+    {
+        int startVertex = 0;
+        for (int i = 0; i < path.length; i++) {
+            int currVertex = path[i];
+            double currX = points[currVertex][0];
+            double currY = points[currVertex][1];
+            System.out.format("V%d(%4.2f, %4.2f) to ", currVertex, currX, currY);
+            if(i > 0 && i % 9 == 0)
+                System.out.println();
+        }
+        //from final node back to node 0:
+        System.out.format("V%d(%4.2f, %4.2f)\n", startVertex, points[0][0], points[0][1]);
+    }
+
+    public double calculateOptimalEdge()
+    {
+        return this.calculateDistance(optimalPath[0][0], optimalPath[0][1], optimalPath[1][0], optimalPath[1][1]);
+    }
+
     public void printCostMatrix(){
-        System.out.format("%8s", "");
+        System.out.format("%2sN = %2d", " ", V);
         for (int i = 0; i < V; i++) {
             System.out.format("%8d", i);
         }
